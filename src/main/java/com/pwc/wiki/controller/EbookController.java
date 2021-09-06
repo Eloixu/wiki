@@ -22,6 +22,9 @@ public class EbookController {
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public CommonResp list(){
-        return ebookService.list();
+        CommonResp<List<Ebook>> resp = new CommonResp<>();
+        List<Ebook> list = ebookService.list();
+        resp.setContent(list);
+        return resp;
     }
 }

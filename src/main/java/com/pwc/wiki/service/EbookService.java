@@ -1,6 +1,7 @@
 package com.pwc.wiki.service;
 
 import com.pwc.wiki.domain.Ebook;
+import com.pwc.wiki.domain.EbookExample;
 import com.pwc.wiki.mapper.EbookMapper;
 import com.pwc.wiki.resp.CommonResp;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,7 @@ public class EbookService {
     @Autowired
     private EbookMapper ebookMapper;
 
-    public CommonResp list() {
-        List<Ebook> list = ebookMapper.selectByExample(null);
-        CommonResp<List<Ebook>> commonResp = new CommonResp();
-        commonResp.setContent(list);
-        return commonResp;
+    public List<Ebook> list() {
+        return ebookMapper.selectByExample(null);
     }
 }
