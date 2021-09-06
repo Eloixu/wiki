@@ -1,6 +1,7 @@
 package com.pwc.wiki.controller;
 
 import com.pwc.wiki.domain.Ebook;
+import com.pwc.wiki.resp.CommonResp;
 import com.pwc.wiki.service.EbookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +21,7 @@ public class EbookController {
     private EbookService ebookService;
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public List<Ebook> list(){
+    public CommonResp list(){
         return ebookService.list();
     }
 }
