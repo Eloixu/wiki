@@ -40,6 +40,8 @@
                              targetPackage="com.pwc.wiki.mapper"
                              type="XMLMAPPER"/>
 
-        <table tableName="demo" domainObjectName="Demo"/>
+        <!--已经生成过代码的表可以注释掉，不然会重复生成（覆盖）-->
+        <!--<table tableName="demo" domainObjectName="Demo"/>-->
+        <table tableName="ebook" domainObjectName="Ebook"/>
     </context>
 </generatorConfiguration>
