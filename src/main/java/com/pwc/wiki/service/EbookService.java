@@ -4,14 +4,11 @@ import com.pwc.wiki.domain.Ebook;
 import com.pwc.wiki.domain.EbookExample;
 import com.pwc.wiki.mapper.EbookMapper;
 import com.pwc.wiki.req.EbookReq;
-import com.pwc.wiki.resp.CommonResp;
 import com.pwc.wiki.resp.EbookResp;
 import com.pwc.wiki.util.CopyUtil;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
