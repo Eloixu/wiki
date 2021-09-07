@@ -6,6 +6,7 @@ import com.pwc.wiki.mapper.EbookMapper;
 import com.pwc.wiki.req.EbookReq;
 import com.pwc.wiki.resp.CommonResp;
 import com.pwc.wiki.resp.EbookResp;
+import com.pwc.wiki.util.CopyUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,12 +27,14 @@ public class EbookService {
         criteria.andNameLike("%" + req.getName() + "%");
         List<Ebook>  ebookList = ebookMapper.selectByExample(ebookExample);
 
-        List<EbookResp> ebookRespList = new ArrayList<>();
-        for(Ebook ebook:ebookList){
-            EbookResp ebookResp = new EbookResp();
-            BeanUtils.copyProperties(ebook,ebookResp);
-            ebookRespList.add(ebookResp);
-        }
+//        List<EbookResp> ebookRespList = new ArrayList<>();
+//        for(Ebook ebook:ebookList){
+//            EbookResp ebookResp = new EbookResp();
+//            BeanUtils.copyProperties(ebook,ebookResp);
+//            ebookRespList.add(ebookResp);
+//        }
+
+        List<EbookResp> ebookRespList = CopyUtil.copyList(ebookList,EbookResp.class);
         return ebookRespList;
     }
 }
