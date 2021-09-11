@@ -7,6 +7,7 @@ import com.pwc.wiki.domain.EbookExample;
 import com.pwc.wiki.mapper.EbookMapper;
 import com.pwc.wiki.req.EbookReq;
 import com.pwc.wiki.resp.EbookResp;
+import com.pwc.wiki.resp.PageResp;
 import com.pwc.wiki.util.CopyUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,7 @@ public class EbookService {
     @Autowired
     private EbookMapper ebookMapper;
 
-    public List<EbookResp> list(EbookReq req) {
+    public PageResp<EbookResp> list(EbookReq req) {
         EbookExample ebookExample = new EbookExample();
         EbookExample.Criteria criteria = ebookExample.createCriteria();
         if(!ObjectUtils.isEmpty(req.getName())){
@@ -31,12 +32,12 @@ public class EbookService {
             criteria.andNameLike("%" + req.getName() + "%");
         }
 
-        PageHelper.startPage(1,3);
+        PageHelper.startPage(req.getPage(),req.getSize());
         List<Ebook>  ebookList = ebookMapper.selectByExample(ebookExample);
 
         PageInfo<Ebook> pageInfo = new PageInfo<>(ebookList);
         LOG.info("总行数：{}",pageInfo.getTotal());
-        LOG.info("总页数：{}",pageInfo.getPages());
+//        LOG.info("总页数：{}",pageInfo.getPages());
 
 //        List<EbookResp> ebookRespList = new ArrayList<>();
 //        for(Ebook ebook:ebookList){
@@ -46,6 +47,11 @@ public class EbookService {
 //        }
 
         List<EbookResp> ebookRespList = CopyUtil.copyList(ebookList,EbookResp.class);
-        return ebookRespList;
+
+        PageResp<EbookResp> pageResp = new PageResp();
+        pageResp.setList(ebookRespList);
+        pageResp.setTotal(pageInfo.getTotal());
+
+        return pageResp ;
     }
 }
