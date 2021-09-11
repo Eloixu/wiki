@@ -39,7 +39,7 @@
             const ebooks = ref();
             const pagination = ref({
                 current: 1,
-                pageSize: 2,
+                pageSize: 4,
                 total: 0
             });
             const loading = ref(false);
@@ -87,13 +87,20 @@
              **/
             const handleQuery = (params: any) => {
                 loading.value = true;
-                axios.get("/ebook/list", params).then((response) => {
+                axios.get("/ebook/list", {
+                    params:{
+                        page: params.page,
+                        size: params.size
+                    }
+                }).then((response) => {
                     loading.value = false;
                     const data = response.data;
-                    ebooks.value = data.content;
-
+                    //把response里的data的值赋值给响应变量ebooks
+                    ebooks.value = data.content.list;
                     // 重置分页按钮(若不写则会一直在第一页)
                     pagination.value.current = params.page;
+                    //这个total会传到table标签的pagination从而自动计算页数
+                    pagination.value.total = data.content.total;
                 });
             };
 
@@ -109,7 +116,12 @@
             };
 
             onMounted(() => {
-                handleQuery({});
+                handleQuery({
+                    //下面的参数会作为params传递到handleQuery方法里去
+                    page: 1,
+                    //pagination是响应式变量，取值一定要加.value
+                    size: pagination.value.pageSize
+                });
             });
 
             return {
