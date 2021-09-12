@@ -145,11 +145,24 @@
             const modalVisible = ref(false);
             const modalLoading = ref(false);
             const handleModalOk = () => {
+                //打开加载效果
                 modalLoading.value = true;
-                setTimeout(() => {
-                    modalVisible.value = false;
-                    modalLoading.value = false;
-                }, 2000);
+                axios.post("/ebook/save",ebook.value).then((response) => {
+                    const data = response.data;
+                    if(data.success){
+                        //关闭对话框
+                        modalVisible.value = false;
+                        //关闭加载效果
+                        modalLoading.value = false;
+                        //重新加载列表
+                        handleQuery({
+                            //下面的参数会作为params传递到handleQuery方法里去
+                            page: pagination.value.current,
+                            //pagination是响应式变量，取值一定要加.value
+                            size: pagination.value.pageSize
+                        });
+                    }
+                });
             };
 
             /**

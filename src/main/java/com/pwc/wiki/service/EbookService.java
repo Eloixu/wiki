@@ -5,8 +5,9 @@ import com.github.pagehelper.PageInfo;
 import com.pwc.wiki.domain.Ebook;
 import com.pwc.wiki.domain.EbookExample;
 import com.pwc.wiki.mapper.EbookMapper;
-import com.pwc.wiki.req.EbookReq;
-import com.pwc.wiki.resp.EbookResp;
+import com.pwc.wiki.req.EbookQueryReq;
+import com.pwc.wiki.req.EbookSaveReq;
+import com.pwc.wiki.resp.EbookQueryResp;
 import com.pwc.wiki.resp.PageResp;
 import com.pwc.wiki.util.CopyUtil;
 import org.slf4j.Logger;
@@ -24,7 +25,7 @@ public class EbookService {
     @Autowired
     private EbookMapper ebookMapper;
 
-    public PageResp<EbookResp> list(EbookReq req) {
+    public PageResp<EbookQueryResp> list(EbookQueryReq req) {
         EbookExample ebookExample = new EbookExample();
         EbookExample.Criteria criteria = ebookExample.createCriteria();
         if(!ObjectUtils.isEmpty(req.getName())){
@@ -39,19 +40,30 @@ public class EbookService {
         LOG.info("总行数：{}",pageInfo.getTotal());
 //        LOG.info("总页数：{}",pageInfo.getPages());
 
-//        List<EbookResp> ebookRespList = new ArrayList<>();
+//        List<EbookQueryResp> ebookQueryRespList = new ArrayList<>();
 //        for(Ebook ebook:ebookList){
-//            EbookResp ebookResp = new EbookResp();
+//            EbookQueryResp ebookResp = new EbookQueryResp();
 //            BeanUtils.copyProperties(ebook,ebookResp);
-//            ebookRespList.add(ebookResp);
+//            ebookQueryRespList.add(ebookResp);
 //        }
 
-        List<EbookResp> ebookRespList = CopyUtil.copyList(ebookList,EbookResp.class);
+        List<EbookQueryResp> ebookQueryRespList = CopyUtil.copyList(ebookList,EbookQueryResp.class);
 
-        PageResp<EbookResp> pageResp = new PageResp();
-        pageResp.setList(ebookRespList);
+        PageResp<EbookQueryResp> pageResp = new PageResp();
+        pageResp.setList(ebookQueryRespList);
         pageResp.setTotal(pageInfo.getTotal());
 
         return pageResp ;
+    }
+
+    //保存：修改+新增
+    public void save(EbookSaveReq req){
+        Ebook ebook = CopyUtil.copy(req,Ebook.class);
+        if(ObjectUtils.isEmpty(req.getId())){
+            ebookMapper.insert(ebook);
+        }
+        else{
+            ebookMapper.updateByPrimaryKey(ebook);
+        }
     }
 }
