@@ -76,7 +76,7 @@
             const ebooks = ref();
             const pagination = ref({
                 current: 1,
-                pageSize: 1001,
+                pageSize: 4,
                 total: 0
             });
             const loading = ref(false);
@@ -165,12 +165,12 @@
                 //打开加载效果
                 modalLoading.value = true;
                 axios.post("/ebook/save",ebook.value).then((response) => {
+                    //关闭加载效果
+                    modalLoading.value = false;
                     const data = response.data;
                     if(data.success){
                         //关闭对话框
                         modalVisible.value = false;
-                        //关闭加载效果
-                        modalLoading.value = false;
                         //重新加载列表
                         handleQuery({
                             //下面的参数会作为params传递到handleQuery方法里去
@@ -178,6 +178,8 @@
                             //pagination是响应式变量，取值一定要加.value
                             size: pagination.value.pageSize
                         });
+                    }else{
+                        message.error(data.message);
                     }
                 });
             };

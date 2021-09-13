@@ -31,7 +31,7 @@ public class EbookController {
 
     //只有当POST请求,并且Content-Type是application/json方式时要用到@RequestBody
     @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public CommonResp save(@RequestBody EbookSaveReq req){
+    public CommonResp save(@Valid @RequestBody EbookSaveReq req){
         CommonResp resp = new CommonResp<>();
         ebookService.save(req);
         return resp;
