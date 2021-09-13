@@ -22,9 +22,16 @@
                     <a-button type="primary" @click="edit(record)">
                         编辑
                     </a-button>
-                    <a-button type="danger">
-                        删除
-                    </a-button>
+                    <a-popconfirm
+                            title="删除后不可恢复，确认删除?"
+                            ok-text="Yes"
+                            cancel-text="No"
+                            @confirm="del(record.id)"
+                    >
+                        <a-button type="danger">
+                            删除
+                        </a-button>
+                    </a-popconfirm>
                 </a-space>
             </template>
         </a-table>
@@ -51,14 +58,16 @@
               <a-input v-model:value="ebook.category2Id" />
           </a-form-item>
           <a-form-item label="描述">
-              <a-input v-model:value="ebook.desc" type="textarea" />
+              <a-input v-model:value="ebook.description" type="textarea" />
           </a-form-item>
       </a-form>
   </a-modal>
+
 </template>
 
 <script lang="ts">
     import { defineComponent, onMounted, ref } from 'vue';
+    import { message } from 'ant-design-vue';
     import axios from 'axios';
 
     export default defineComponent({
@@ -168,6 +177,7 @@
                 });
             };
 
+
             /**
              * 编辑
              */
@@ -183,6 +193,24 @@
                 modalVisible.value = true;
                 //把ebook设成空对象
                 ebook.value={}
+            };
+
+            /**
+             * 删除
+             */
+            const del = (id: number) => {
+                axios.delete("/ebook/delete/"+id).then((response) => {
+                    const data = response.data;
+                    if(data.success){
+                        //重新加载列表
+                        handleQuery({
+                            //下面的参数会作为params传递到handleQuery方法里去
+                            page: pagination.value.current,
+                            //pagination是响应式变量，取值一定要加.value
+                            size: pagination.value.pageSize
+                        });
+                    }
+                });
             };
 
             onMounted(() => {
@@ -203,11 +231,12 @@
 
                 edit,
                 add,
+                del,
 
                 ebook,
                 modalVisible,
                 modalLoading,
-                handleModalOk
+                handleModalOk,
             }
         }
     });
