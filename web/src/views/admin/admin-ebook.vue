@@ -3,6 +3,9 @@
     <a-layout-content
             :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
+        <a-button type="primary" @click="add" size="large" >
+            新增
+        </a-button>
         <a-table
                 :columns="columns"
                 :row-key="record => record.id"
@@ -173,6 +176,15 @@
                 ebook.value = record
             };
 
+            /**
+             * 新增
+             */
+            const add = () => {
+                modalVisible.value = true;
+                //把ebook设成空对象
+                ebook.value={}
+            };
+
             onMounted(() => {
                 handleQuery({
                     //下面的参数会作为params传递到handleQuery方法里去
@@ -188,7 +200,9 @@
                 columns,
                 loading,
                 handleTableChange,
+
                 edit,
+                add,
 
                 ebook,
                 modalVisible,
