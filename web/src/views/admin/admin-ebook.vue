@@ -76,7 +76,7 @@
             const ebooks = ref();
             const pagination = ref({
                 current: 1,
-                pageSize: 4,
+                pageSize: 1001,
                 total: 0
             });
             const loading = ref(false);
@@ -132,12 +132,17 @@
                 }).then((response) => {
                     loading.value = false;
                     const data = response.data;
-                    //把response里的data的值赋值给响应变量ebooks
-                    ebooks.value = data.content.list;
-                    // 重置分页按钮(若不写则会一直在第一页)
-                    pagination.value.current = params.page;
-                    //这个total会传到table标签的pagination从而自动计算页数
-                    pagination.value.total = data.content.total;
+                    if(data.success){
+                        //把response里的data的值赋值给响应变量ebooks
+                        ebooks.value = data.content.list;
+                        // 重置分页按钮(若不写则会一直在第一页)
+                        pagination.value.current = params.page;
+                        //这个total会传到table标签的pagination从而自动计算页数
+                        pagination.value.total = data.content.total;
+                    }else{
+                        message.error(data.message);
+                    }
+
                 });
             };
 
