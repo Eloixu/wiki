@@ -27,8 +27,13 @@
                 :loading="loading"
                 @change="handleTableChange"
         >
+            <!--渲染-->
             <template #cover="{ text: cover }">
                 <img v-if="cover" :src="cover" alt="avatar" />
+            </template>
+            <!--category为渲染的名字-->
+            <template v-slot:category="{ text, record }">
+                <span>{{ getCategoryName(record.category1Id) }} / {{ getCategoryName(record.category2Id) }}</span>
             </template>
             <template v-slot:action="{ text, record }">
                 <a-space size="small">
@@ -108,13 +113,8 @@
                     dataIndex: 'name'
                 },
                 {
-                    title: '分类一',
-                    key: 'category1Id',
-                    dataIndex: 'category1Id'
-                },
-                {
-                    title: '分类二',
-                    dataIndex: 'category2Id'
+                    title: '分类',
+                    slots: { customRender: 'category' }
                 },
                 {
                     title: '文档数',
@@ -248,6 +248,8 @@
 
             //所有一级分类
             const level1 =  ref();
+            //setup()里的全局变量
+            let categorys: any;
             /**
              * 查询所有分类
              **/
@@ -258,7 +260,7 @@
                     const data = response.data;
                     if (data.success) {
                         //categorys为局部变量（普通变量）
-                        const categorys = data.content;
+                        categorys = data.content;
                         console.log("原始数组：", categorys);
 
                         level1.value = [];
@@ -269,6 +271,18 @@
                         message.error(data.message);
                     }
                 });
+            };
+
+            const getCategoryName = (cid: number) => {
+                // console.log(cid)
+                let result = "";
+                categorys.forEach((item: any) => {
+                    if (item.id === cid) {
+                        // return item.name; // 注意，这里直接return不起作用
+                        result = item.name;
+                    }
+                });
+                return result;
             };
 
 
@@ -290,6 +304,7 @@
                 loading,
                 handleTableChange,
                 handleQuery,
+                getCategoryName,
 
                 edit,
                 add,
