@@ -64,11 +64,12 @@
           <a-form-item label="名称">
               <a-input v-model:value="ebook.name" />
           </a-form-item>
-          <a-form-item label="分类一">
-              <a-input v-model:value="ebook.category1Id" />
-          </a-form-item>
-          <a-form-item label="分类二">
-              <a-input v-model:value="ebook.category2Id" />
+          <a-form-item label="分类">
+              <a-cascader
+                      v-model:value="categoryIds"
+                      :field-names="{ label: 'name', value: 'id', children: 'children' }"
+                      :options="level1"
+              />
           </a-form-item>
           <a-form-item label="描述">
               <a-input v-model:value="ebook.description" type="textarea" />
@@ -174,12 +175,19 @@
             };
 
             // -------- 表单 ---------
+            /**
+             * 数组，[100, 101] 对应：前端开发 / Vue
+             */
+            const categoryIds = ref();
             const ebook = ref({});
             const modalVisible = ref(false);
             const modalLoading = ref(false);
             const handleModalOk = () => {
                 //打开加载效果
                 modalLoading.value = true;
+                //把级连组件的值拆分到category1Id、category2Id
+                ebook.value.category1Id = categoryIds.value[0];
+                ebook.value.category2Id = categoryIds.value[1];
                 axios.post("/ebook/save",ebook.value).then((response) => {
                     //关闭加载效果
                     modalLoading.value = false;
@@ -208,6 +216,7 @@
                 modalVisible.value = true;
                 //通过赋值record的值给ebook，这样修改ebook时就不会对record产生影响了
                 ebook.value = Tool.copy(record);
+                categoryIds.value = [ebook.value.category1Id,ebook.value.category2Id]
             };
 
             /**
@@ -237,7 +246,34 @@
                 });
             };
 
+            //所有一级分类
+            const level1 =  ref();
+            /**
+             * 查询所有分类
+             **/
+            const handleQueryCategory = () => {
+                loading.value = true;
+                axios.get("/category/all").then((response) => {
+                    loading.value = false;
+                    const data = response.data;
+                    if (data.success) {
+                        //categorys为局部变量（普通变量）
+                        const categorys = data.content;
+                        console.log("原始数组：", categorys);
+
+                        level1.value = [];
+                        //用递归的方式转成一级分类树形结构
+                        level1.value = Tool.array2Tree(categorys, 0);
+                        console.log("树形结构：", level1.value);
+                    } else {
+                        message.error(data.message);
+                    }
+                });
+            };
+
+
             onMounted(() => {
+                handleQueryCategory();
                 handleQuery({
                     //下面的参数会作为params传递到handleQuery方法里去
                     page: 1,
@@ -263,6 +299,8 @@
                 modalVisible,
                 modalLoading,
                 handleModalOk,
+                categoryIds,
+                level1
             }
         }
     });
