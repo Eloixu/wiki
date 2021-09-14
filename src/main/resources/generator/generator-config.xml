@@ -42,6 +42,7 @@
 
         <!--已经生成过代码的表可以注释掉，不然会重复生成（覆盖）-->
         <!--<table tableName="demo" domainObjectName="Demo"/>-->
-        <table tableName="ebook" domainObjectName="Ebook"/>
+        <!--<table tableName="ebook" domainObjectName="Ebook"/>-->
+        <table tableName="category" domainObjectName="Category"/>
     </context>
 </generatorConfiguration>
