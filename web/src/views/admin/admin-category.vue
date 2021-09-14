@@ -5,10 +5,7 @@
     >
         <a-form layout="inline" :model="param">
             <a-form-item>
-                <a-input v-model:value="param.name" placeholder="名称"/>
-            </a-form-item>
-            <a-form-item>
-                <a-button type="primary" @click="handleQuery({page: 1, size: pagination.pageSize})" >
+                <a-button type="primary" @click="handleQuery()" >
                     查询
                 </a-button>
             </a-form-item>
@@ -23,9 +20,8 @@
                 :columns="columns"
                 :row-key="record => record.id"
                 :data-source="categorys"
-                :pagination="pagination"
+                :pagination="false"
                 :loading="loading"
-                @change="handleTableChange"
         >
             <template #cover="{ text: cover }">
                 <img v-if="cover" :src="cover" alt="avatar" />
@@ -83,11 +79,6 @@
         setup() {
             const param = ref({});
             const categorys = ref();
-            const pagination = ref({
-                current: 1,
-                pageSize: 10,
-                total: 0
-            });
             const loading = ref(false);
 
             const columns = [
@@ -114,24 +105,14 @@
             /**
              * 数据查询
              **/
-            const handleQuery = (params: any) => {
+            const handleQuery = () => {
                 loading.value = true;
-                axios.get("/category/list", {
-                    params:{
-                        page: params.page,
-                        size: params.size,
-                        name: param.value.name
-                    }
-                }).then((response) => {
+                axios.get("/category/all").then((response) => {
                     loading.value = false;
                     const data = response.data;
                     if(data.success){
                         //把response里的data的值赋值给响应变量categorys
-                        categorys.value = data.content.list;
-                        // 重置分页按钮(若不写则会一直在第一页)
-                        pagination.value.current = params.page;
-                        //这个total会传到table标签的pagination从而自动计算页数
-                        pagination.value.total = data.content.total;
+                        categorys.value = data.content;
                     }else{
                         message.error(data.message);
                     }
@@ -139,16 +120,6 @@
                 });
             };
 
-            /**
-             * 表格点击页码时触发
-             */
-            const handleTableChange = (pagination: any) => {
-                console.log("看看自带的分页参数都有啥：" + pagination);
-                handleQuery({
-                    page: pagination.current,
-                    size: pagination.pageSize
-                });
-            };
 
             // -------- 表单 ---------
             const category = ref({});
@@ -165,12 +136,7 @@
                         //关闭对话框
                         modalVisible.value = false;
                         //重新加载列表
-                        handleQuery({
-                            //下面的参数会作为params传递到handleQuery方法里去
-                            page: pagination.value.current,
-                            //pagination是响应式变量，取值一定要加.value
-                            size: pagination.value.pageSize
-                        });
+                        handleQuery();
                     }else{
                         message.error(data.message);
                     }
@@ -204,32 +170,20 @@
                     const data = response.data;
                     if(data.success){
                         //重新加载列表
-                        handleQuery({
-                            //下面的参数会作为params传递到handleQuery方法里去
-                            page: pagination.value.current,
-                            //pagination是响应式变量，取值一定要加.value
-                            size: pagination.value.pageSize
-                        });
+                        handleQuery();
                     }
                 });
             };
 
             onMounted(() => {
-                handleQuery({
-                    //下面的参数会作为params传递到handleQuery方法里去
-                    page: 1,
-                    //pagination是响应式变量，取值一定要加.value
-                    size: pagination.value.pageSize
-                });
+                handleQuery();
             });
 
             return {
                 param,
                 categorys,
-                pagination,
                 columns,
                 loading,
-                handleTableChange,
                 handleQuery,
 
                 edit,

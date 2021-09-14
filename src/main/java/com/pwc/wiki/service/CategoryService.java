@@ -29,6 +29,17 @@ public class CategoryService {
     @Autowired
     private SnowFlake snowFlake;
 
+    public List<CategoryQueryResp> all() {
+        CategoryExample categoryExample = new CategoryExample();
+        categoryExample.setOrderByClause("sort ASC");
+
+        List<Category> categoryList = categoryMapper.selectByExample(categoryExample);
+
+        List<CategoryQueryResp> categoryQueryRespList = CopyUtil.copyList(categoryList,CategoryQueryResp.class);
+
+        return categoryQueryRespList ;
+    }
+
     public PageResp<CategoryQueryResp> list(CategoryQueryReq req) {
         CategoryExample categoryExample = new CategoryExample();
 
