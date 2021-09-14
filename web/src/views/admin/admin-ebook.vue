@@ -270,6 +270,14 @@
                     } else {
                         message.error(data.message);
                     }
+
+                    //加载完分类后，再加载电子书，否则如果分类树加载很慢，则电子书渲染会报错
+                    handleQuery({
+                        //下面的参数会作为params传递到handleQuery方法里去
+                        page: 1,
+                        //pagination是响应式变量，取值一定要加.value
+                        size: pagination.value.pageSize
+                    });
                 });
             };
 
@@ -288,12 +296,6 @@
 
             onMounted(() => {
                 handleQueryCategory();
-                handleQuery({
-                    //下面的参数会作为params传递到handleQuery方法里去
-                    page: 1,
-                    //pagination是响应式变量，取值一定要加.value
-                    size: pagination.value.pageSize
-                });
             });
 
             return {
