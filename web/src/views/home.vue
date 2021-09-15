@@ -98,31 +98,39 @@ export default defineComponent({
         });
     };
 
+    let category2Id = 0;
+    //是否显示欢迎页面
+    const isShowWelcome = ref(true);
 
-      //是否显示欢迎页面
-      const isShowWelcome = ref(true);
+    const handleQueryEbook = () =>{
+      axios.get("/ebook/list",{
+          params:{
+              page: 1,
+              size: 1000,
+              category2Id:category2Id
+          }
+      }).then((response) => {
+          const data = response.data;
+          ebooks.value = data.content.list;
+    //        ebooks1.books = data.content;
+      });
+    };
 
-      const handleClick = (value: any) => {
+    const handleClick = (value: any) => {
         console.log("menu click", value)
         if(value.key === 'welcome'){
             isShowWelcome.value = true;
         }else{
+            category2Id = value.key;
             isShowWelcome.value = false;
+            handleQueryEbook();
         }
     };
 
+
     onMounted(()=>{
-      console.log("onMounted");
-      axios.get("/ebook/list",{
-          params:{
-            page: 1,
-            size: 1000
-          }
-      }).then((response) => {
-        const data = response.data;
-        ebooks.value = data.content.list;
-//        ebooks1.books = data.content;
-      });
+        console.log("onMounted");
+//        handleQueryEbook();
         handleQueryCategory();
 
     });
