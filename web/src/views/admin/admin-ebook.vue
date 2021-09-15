@@ -93,7 +93,8 @@
     export default defineComponent({
         name: 'AdminEbook',
         setup() {
-            const param = ref({});
+            const param = ref();
+            param.value = {};
             const ebooks = ref();
             const pagination = ref({
                 current: 1,
@@ -179,7 +180,7 @@
              * 数组，[100, 101] 对应：前端开发 / Vue
              */
             const categoryIds = ref();
-            const ebook = ref({});
+            const ebook = ref();
             const modalVisible = ref(false);
             const modalLoading = ref(false);
             const handleModalOk = () => {
