@@ -18,12 +18,14 @@
                     </a-form-item>
                 </a-form>
                 <a-table
+                        v-if="level1.length > 0"
                         :columns="columns"
                         :row-key="record => record.id"
                         :data-source="level1"
                         :pagination="false"
                         :loading="loading"
                         size="small"
+                        :defaultExpandAllRows="true"
                 >
                     <template #name="{ text, record }">
                         {{record.sort}} {{text}}
@@ -146,6 +148,7 @@
              * }]
              */
             const level1 = ref(); // 一级文档树，children属性就是二级文档
+            level1.value = []
 
 
             /**
