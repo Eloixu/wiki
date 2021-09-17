@@ -195,8 +195,9 @@
                     modalLoading.value = false;
                     const data = response.data;
                     if(data.success){
-                        //关闭对话框
-                        modalVisible.value = false;
+//                        //关闭对话框
+//                        modalVisible.value = false;
+                        message.success("保存成功！");
                         //重新加载列表
                         handleQuery();
                     }else{
@@ -293,6 +294,8 @@
              * 编辑
              */
             const edit = (record: any) => {
+                // 清空富文本框
+                editor.txt.html("");
                 modalVisible.value = true;
                 //通过赋值record的值给doc，这样修改doc时就不会对record产生影响了
                 doc.value = Tool.copy(record);
@@ -310,6 +313,8 @@
              * 新增
              */
             const add = () => {
+                // 清空富文本框
+                editor.txt.html("");
                 modalVisible.value = true;
                 //把doc设成空对象
                 doc.value={
