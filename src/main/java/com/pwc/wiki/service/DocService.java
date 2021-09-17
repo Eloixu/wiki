@@ -2,8 +2,10 @@ package com.pwc.wiki.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.pwc.wiki.domain.Content;
 import com.pwc.wiki.domain.Doc;
 import com.pwc.wiki.domain.DocExample;
+import com.pwc.wiki.mapper.ContentMapper;
 import com.pwc.wiki.mapper.DocMapper;
 import com.pwc.wiki.req.DocQueryReq;
 import com.pwc.wiki.req.DocSaveReq;
@@ -25,6 +27,9 @@ public class DocService {
 
     @Autowired
     private DocMapper docMapper;
+
+    @Autowired
+    private ContentMapper contentMapper;
 
     @Autowired
     private SnowFlake snowFlake;
@@ -66,15 +71,31 @@ public class DocService {
         return pageResp ;
     }
 
+    //查找content
+    public String getContent(Long id){
+        Content content = contentMapper.selectByPrimaryKey(id);
+        return content==null? null:content.getContent();
+    }
+
     //保存：修改+新增
     public void save(DocSaveReq req){
+        //把docSaveReq里的id等（除content）复制到doc
         Doc doc = CopyUtil.copy(req,Doc.class);
+        //把docSaveReq里的id和content复制到content
+        Content content = CopyUtil.copy(req,Content.class);
         if(ObjectUtils.isEmpty(req.getId())){
             doc.setId(snowFlake.nextId());
             docMapper.insert(doc);
+            content.setId(doc.getId());
+            contentMapper.insert(content);
         }
         else{
             docMapper.updateByPrimaryKey(doc);
+            int count = contentMapper.updateByPrimaryKeyWithBLOBs(content);
+            //原来的doc里没有存content
+            if(count==0){
+                contentMapper.insert(content);
+            }
         }
     }
 

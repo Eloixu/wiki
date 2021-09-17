@@ -179,7 +179,8 @@
             // 因为树选择组件的属性状态，会随当前编辑的节点而变化(打开不同的节点，disable的节点会变化)，所以单独声明一个响应式变量
             const treeSelectData = ref()
             treeSelectData.value = []
-            const doc = ref({});
+            const doc = ref();
+            doc.value = {};
             const modalVisible = ref(false);
             const modalLoading = ref(false);
             const editor = new E('#content');
@@ -188,6 +189,7 @@
             const handleSave = () => {
                 //打开加载效果
                 modalLoading.value = true;
+                doc.value.content = editor.txt.html();
                 axios.post("/doc/save",doc.value).then((response) => {
                     //关闭加载效果
                     modalLoading.value = false;
@@ -265,6 +267,27 @@
                 }
             }
 
+            /**
+             * 内容查询
+             **/
+            const handleQueryContent = () => {
+                axios.get("/doc/get-content", {
+                    params:{
+                        id: doc.value.id
+                    }
+                }).then((response) => {
+                    const data = response.data;
+                    if (data.success) {
+                        const data = response.data;
+                        if (data.success) {
+                            editor.txt.html(data.content)
+                        } else {
+                            message.error(data.message);
+                        }
+                    }
+                });
+            };
+
 
             /**
              * 编辑
@@ -273,6 +296,7 @@
                 modalVisible.value = true;
                 //通过赋值record的值给doc，这样修改doc时就不会对record产生影响了
                 doc.value = Tool.copy(record);
+                handleQueryContent();
 
                 // 不能选择当前节点及其所有子孙节点，作为父节点，会使树断开
                 treeSelectData.value = Tool.copy(level1.value);

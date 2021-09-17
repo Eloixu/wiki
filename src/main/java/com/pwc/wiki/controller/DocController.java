@@ -39,6 +39,14 @@ public class DocController {
         return resp;
     }
 
+    @RequestMapping(value = "/get-content", method = RequestMethod.GET)
+    public CommonResp list(Long id){
+        CommonResp<String> resp = new CommonResp<>();
+        String content = docService.getContent(id);
+        resp.setContent(content);
+        return resp;
+    }
+
     //只有当POST请求,并且Content-Type是application/json方式时要用到@RequestBody
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public CommonResp save(@Valid @RequestBody DocSaveReq req){
