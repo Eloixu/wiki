@@ -103,6 +103,7 @@
     });
 </script>
 
+<!--由于样式没有加scoped参数，所以它是一个全局的样式，所有页面都适用-->
 <style>
     /* wangeditor默认样式, 参照: http://www.wangeditor.com/doc/pages/02-%E5%86%85%E5%AE%B9%E5%A4%84%E7%90%86/03-%E8%8E%B7%E5%8F%96html.html */
     /* table 样式 */

@@ -79,11 +79,22 @@
                         <a-input v-model:value="doc.sort" placeholder="顺序"/>
                     </a-form-item>
                     <a-form-item>
+                        <a-button type="primary" @click="handlePreviewContent()">
+                            <EyeOutlined /> 内容预览
+                        </a-button>
+                    </a-form-item>
+                    <a-form-item>
                         <div id="content"></div>
                     </a-form-item>
                 </a-form>
             </a-col>
         </a-row>
+
+        <!--滑动窗口，在visible为true时才会显示-->
+        <a-drawer width="900" placement="right" :closable="false" :visible="drawerVisible" @close="onDrawerClose">
+            <!--wangeditor的样式是全局的，所以这里可以取到-->
+            <div class="wangeditor" :innerHTML="previewHtml"></div>
+        </a-drawer>
 
     </a-layout-content>
   </a-layout>
@@ -348,6 +359,19 @@
                 });
             };
 
+
+            // ----------------富文本预览--------------
+            const drawerVisible = ref(false);
+            const previewHtml = ref();
+            const handlePreviewContent = () => {
+                const html = editor.txt.html();
+                previewHtml.value = html;
+                drawerVisible.value = true;
+            };
+            const onDrawerClose = () => {
+                drawerVisible.value = false;
+            };
+
             onMounted(() => {
                 handleQuery();
 
@@ -372,6 +396,12 @@
                 handleSave,
 
                 treeSelectData,
+
+//                滑动窗口
+                drawerVisible,
+                previewHtml,
+                handlePreviewContent,
+                onDrawerClose,
             }
         }
     });
