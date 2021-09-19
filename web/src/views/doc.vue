@@ -13,6 +13,8 @@
                     </a-tree>
                 </a-col>
                 <a-col :span="18">
+                    <!--是纯html展示，和wangEditor没什么关系-->
+                    <div :innerHTML="html"></div>
                 </a-col>
             </a-row>
         </a-layout-content>
@@ -31,6 +33,7 @@
         setup() {
             const route = useRoute();
             const docs = ref();
+            const html = ref();
 
             /**
              * 一级文档树，children属性就是二级文档
@@ -63,12 +66,38 @@
                 });
             };
 
+            /**
+             * 文档content查询
+             **/
+            const handleQueryContent = (id: number) => {
+                axios.get("/doc/get-content" , {params:{id: id}}).then((response) => {
+                    const data = response.data;
+                    if (data.success) {
+                        html.value = data.content;
+
+                    } else {
+                        message.error(data.message);
+                    }
+                });
+            };
+
+            const onSelect = (selectedKeys: any, info: any) => {
+                console.log('selected', selectedKeys, info);
+                //Ant Deisign Vue的树形控件可以有多个值，但项目中使用到的只能选择一个，故取数组第0个值
+                if (Tool.isNotEmpty(selectedKeys)) {
+                    // 加载内容
+                    handleQueryContent(selectedKeys[0]);
+                }
+            };
+
             onMounted(() => {
                 handleQuery();
             });
 
             return {
                 level1,
+                html,
+                onSelect
             }
         }
     });
