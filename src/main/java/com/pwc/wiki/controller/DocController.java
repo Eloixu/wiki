@@ -24,10 +24,10 @@ public class DocController {
     @Autowired
     private DocService docService;
 
-    @RequestMapping(value = "/all", method = RequestMethod.GET)
-    public CommonResp all(){
+    @RequestMapping(value = "/all/{ebookId}", method = RequestMethod.GET)
+    public CommonResp all(@PathVariable Long ebookId){
         CommonResp<List<DocQueryResp>> resp = new CommonResp<>();
-        resp.setContent(docService.all());
+        resp.setContent(docService.all(ebookId));
         return resp;
     }
 
