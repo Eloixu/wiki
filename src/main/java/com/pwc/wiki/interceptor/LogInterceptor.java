@@ -18,7 +18,7 @@
 //    private static final Logger LOG = LoggerFactory.getLogger(LogInterceptor.class);
 //
 //    @Override
-//    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+//    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws exception {
 //        // 打印请求信息
 //        LOG.info("------------- LogInterceptor 开始 -------------");
 //        LOG.info("请求地址: {} {}", request.getRequestURL().toString(), request.getMethod());
@@ -30,7 +30,7 @@
 //    }
 //
 //    @Override
-//    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+//    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws exception {
 //        long startTime = (Long) request.getAttribute("requestStartTime");
 //        LOG.info("------------- LogInterceptor 结束 耗时：{} ms -------------", System.currentTimeMillis() - startTime);
 //    }

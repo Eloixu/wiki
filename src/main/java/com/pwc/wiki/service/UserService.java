@@ -4,6 +4,8 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.pwc.wiki.domain.User;
 import com.pwc.wiki.domain.UserExample;
+import com.pwc.wiki.exception.BusinessException;
+import com.pwc.wiki.exception.BusinessExceptionCode;
 import com.pwc.wiki.mapper.UserMapper;
 import com.pwc.wiki.req.UserQueryReq;
 import com.pwc.wiki.req.UserSaveReq;
@@ -56,10 +58,18 @@ public class UserService {
     public void save(UserSaveReq req){
         User user = CopyUtil.copy(req,User.class);
         if(ObjectUtils.isEmpty(req.getId())){
-            user.setId(snowFlake.nextId());
-            userMapper.insert(user);
+            if(selectByLoginName(req.getLoginName())==null){
+                //新增
+                user.setId(snowFlake.nextId());
+                userMapper.insert(user);
+            }else{
+                //用户名重复
+                throw new BusinessException(BusinessExceptionCode.USER_LOGIN_NAME_EXIST);
+            }
+
         }
         else{
+            //修改
             userMapper.updateByPrimaryKey(user);
         }
     }
@@ -67,5 +77,20 @@ public class UserService {
     //删除
     public void delete(Long id){
         userMapper.deleteByPrimaryKey(id);
+    }
+
+
+    public User selectByLoginName(String loginName){
+        UserExample userExample = new UserExample();
+        UserExample.Criteria criteria = userExample.createCriteria();
+        criteria.andLoginNameEqualTo(loginName);
+        //MyBatis查出来的都是list
+        List<User> userList = userMapper.selectByExample(userExample);
+        if(userList.isEmpty()){
+            return null;
+        }else{
+            return userList.get(0);
+        }
+
     }
 }
