@@ -7,6 +7,7 @@ import com.pwc.wiki.resp.UserQueryResp;
 import com.pwc.wiki.resp.PageResp;
 import com.pwc.wiki.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -32,6 +33,8 @@ public class UserController {
     //只有当POST请求,并且Content-Type是application/json方式时要用到@RequestBody
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public CommonResp save(@Valid @RequestBody UserSaveReq req){
+        //后端对前端传过来的密码密文进行第二次md5加密
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
         CommonResp resp = new CommonResp<>();
         userService.save(req);
         return resp;
