@@ -1,9 +1,11 @@
 package com.pwc.wiki.controller;
 
+import com.pwc.wiki.req.UserLoginReq;
 import com.pwc.wiki.req.UserQueryReq;
 import com.pwc.wiki.req.UserResetPasswordReq;
 import com.pwc.wiki.req.UserSaveReq;
 import com.pwc.wiki.resp.CommonResp;
+import com.pwc.wiki.resp.UserLoginResp;
 import com.pwc.wiki.resp.UserQueryResp;
 import com.pwc.wiki.resp.PageResp;
 import com.pwc.wiki.service.UserService;
@@ -22,6 +24,16 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public CommonResp save(@Valid @RequestBody UserLoginReq req){
+        //后端对前端传过来的密码密文进行第二次md5加密
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
+        CommonResp<UserLoginResp> resp = new CommonResp<>();
+        UserLoginResp userLoginResp = userService.login(req);
+        resp.setContent(userLoginResp);
+        return resp;
+    }
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public CommonResp list(@Valid UserQueryReq req){

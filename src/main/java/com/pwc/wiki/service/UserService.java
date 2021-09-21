@@ -7,9 +7,11 @@ import com.pwc.wiki.domain.UserExample;
 import com.pwc.wiki.exception.BusinessException;
 import com.pwc.wiki.exception.BusinessExceptionCode;
 import com.pwc.wiki.mapper.UserMapper;
+import com.pwc.wiki.req.UserLoginReq;
 import com.pwc.wiki.req.UserQueryReq;
 import com.pwc.wiki.req.UserResetPasswordReq;
 import com.pwc.wiki.req.UserSaveReq;
+import com.pwc.wiki.resp.UserLoginResp;
 import com.pwc.wiki.resp.UserQueryResp;
 import com.pwc.wiki.resp.PageResp;
 import com.pwc.wiki.util.CopyUtil;
@@ -54,6 +56,30 @@ public class UserService {
 
         return pageResp ;
     }
+
+    //登陆
+    public UserLoginResp login(UserLoginReq req){
+        //用用户名去数据库里查询用户
+        User user = selectByLoginName(req.getLoginName());
+        if(user==null){
+            //用户名不存在
+            LOG.info("用户名不存在, {}", req.getLoginName());//后端日志里面可以显示准确信息
+            //该异常信息会返回给前端，故只能提示"用户名不存在或密码错误"
+            throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+        }else{
+            if(user.getPassword().equals(req.getPassword())){
+                //登陆成功
+                UserLoginResp userLoginResp = CopyUtil.copy(user,UserLoginResp.class);
+                return userLoginResp;
+            }else{
+                //密码不正确
+                LOG.info("密码不对, 输入密码：{}, 数据库密码：{}", req.getPassword(), user.getPassword());//后端日志里面可以显示准确信息
+                //该异常信息会返回给前端，故只能提示"用户名不存在或密码错误"
+                throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+            }
+        }
+    }
+
 
     //保存：修改+新增
     public void save(UserSaveReq req){
