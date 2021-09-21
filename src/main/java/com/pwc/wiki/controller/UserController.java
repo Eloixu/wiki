@@ -1,5 +1,6 @@
 package com.pwc.wiki.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.pwc.wiki.req.UserLoginReq;
 import com.pwc.wiki.req.UserQueryReq;
 import com.pwc.wiki.req.UserResetPasswordReq;
@@ -10,6 +11,8 @@ import com.pwc.wiki.resp.UserQueryResp;
 import com.pwc.wiki.resp.PageResp;
 import com.pwc.wiki.service.UserService;
 import com.pwc.wiki.util.SnowFlake;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.DigestUtils;
@@ -23,6 +26,8 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
     private UserService userService;
@@ -40,9 +45,12 @@ public class UserController {
         CommonResp<UserLoginResp> resp = new CommonResp<>();
         UserLoginResp userLoginResp = userService.login(req);
         //token就是一个唯一的字符串,所以可以用雪花算法来生成
-        String token = Long.toString(snowFlake.nextId());
+        Long token = snowFlake.nextId();
+        userLoginResp.setToken(token.toString());
+        LOG.info("生成单点登录token：{}，并放入redis中", token);
         //以token作为key，userLoginResp作为value，时效为24小时
-        redisTemplate.opsForValue().set(token, userLoginResp, 3600*24, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(token, JSONObject.toJSONString(userLoginResp), 3600*24, TimeUnit.SECONDS);
+//        redisTemplate.opsForValue().set(key, value, 3600, TimeUnit.SECONDS);
         resp.setContent(userLoginResp);
         return resp;
     }
