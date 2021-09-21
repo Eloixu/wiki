@@ -1,14 +1,15 @@
 package com.pwc.wiki.req;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 public class UserLoginReq {
 
-    @NotNull(message = "【用户名】不能为空")
+    @NotEmpty(message = "【用户名】不能为空")//@NotEmpty会去验证null和空字符串的情况
     private String loginName;
 
-    @NotNull(message = "【密码】不能为空")
+    @NotEmpty(message = "【密码】不能为空")
     // @Length(min = 6, max = 20, message = "【密码】6~20位")
     @Pattern(regexp = "^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,32}$", message = "【密码】规则不正确")//返回模糊的message（防止黑客）
     private String password;
