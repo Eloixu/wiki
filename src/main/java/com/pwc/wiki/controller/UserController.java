@@ -9,11 +9,13 @@ import com.pwc.wiki.resp.UserLoginResp;
 import com.pwc.wiki.resp.UserQueryResp;
 import com.pwc.wiki.resp.PageResp;
 import com.pwc.wiki.service.UserService;
+import com.pwc.wiki.util.SnowFlake;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by xuhaocheng on 05/09/2021.
@@ -25,12 +27,22 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private SnowFlake snowFlake;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public CommonResp save(@Valid @RequestBody UserLoginReq req){
         //后端对前端传过来的密码密文进行第二次md5加密
         req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
         CommonResp<UserLoginResp> resp = new CommonResp<>();
         UserLoginResp userLoginResp = userService.login(req);
+        //token就是一个唯一的字符串,所以可以用雪花算法来生成
+        String token = Long.toString(snowFlake.nextId());
+        //以token作为key，userLoginResp作为value，时效为24小时
+        redisTemplate.opsForValue().set(token, userLoginResp, 3600*24, TimeUnit.SECONDS);
         resp.setContent(userLoginResp);
         return resp;
     }
