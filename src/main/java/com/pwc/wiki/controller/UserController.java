@@ -1,6 +1,7 @@
 package com.pwc.wiki.controller;
 
 import com.pwc.wiki.req.UserQueryReq;
+import com.pwc.wiki.req.UserResetPasswordReq;
 import com.pwc.wiki.req.UserSaveReq;
 import com.pwc.wiki.resp.CommonResp;
 import com.pwc.wiki.resp.UserQueryResp;
@@ -37,6 +38,15 @@ public class UserController {
         req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
         CommonResp resp = new CommonResp<>();
         userService.save(req);
+        return resp;
+    }
+
+    @RequestMapping(value = "/reset-password", method = RequestMethod.POST)
+    public CommonResp save(@Valid @RequestBody UserResetPasswordReq req){
+        //后端对前端传过来的密码密文进行第二次md5加密
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
+        CommonResp resp = new CommonResp<>();
+        userService.resetPassword(req);
         return resp;
     }
 

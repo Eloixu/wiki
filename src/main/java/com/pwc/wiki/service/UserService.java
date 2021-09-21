@@ -8,6 +8,7 @@ import com.pwc.wiki.exception.BusinessException;
 import com.pwc.wiki.exception.BusinessExceptionCode;
 import com.pwc.wiki.mapper.UserMapper;
 import com.pwc.wiki.req.UserQueryReq;
+import com.pwc.wiki.req.UserResetPasswordReq;
 import com.pwc.wiki.req.UserSaveReq;
 import com.pwc.wiki.resp.UserQueryResp;
 import com.pwc.wiki.resp.PageResp;
@@ -76,6 +77,14 @@ public class UserService {
             //"Selective"表示user里的属性有值才更新
             userMapper.updateByPrimaryKeySelective(user);
         }
+    }
+
+    //重置密码
+    public void resetPassword(UserResetPasswordReq req){
+        //复制出来的user对象只有id和password值
+        User user = CopyUtil.copy(req,User.class);
+        //"Selective"表示user里的属性有值才更新
+        userMapper.updateByPrimaryKeySelective(user);
     }
 
     //删除
