@@ -70,7 +70,9 @@ public class UserService {
         }
         else{
             //修改
+            //编辑用户时不修改用户名和密码
             user.setLoginName(null);
+            user.setPassword(null);
             //"Selective"表示user里的属性有值才更新
             userMapper.updateByPrimaryKeySelective(user);
         }
