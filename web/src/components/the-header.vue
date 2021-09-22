@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts">
-    import { defineComponent, ref } from 'vue';
+    import { defineComponent, ref, computed } from 'vue';
     import axios from 'axios';
     import { message } from 'ant-design-vue';
     import store from "@/store";
@@ -64,8 +64,7 @@
         name: 'the-header',
         setup () {
             //登陆后保存
-            const user = ref();
-            user.value = {};
+            const user = computed(() => store.state.user);//computed会去监听store的变化
 
             //用来登陆
             const loginUser = ref({
@@ -89,9 +88,8 @@
                     if (data.success) {
                         loginModalVisible.value = false;
                         message.success("登陆成功！");
-                        user.value = data.content;
                         //调用在vuex里定义的setUser()来给全局变量user赋值
-                        store.commit("setUser", user.value);
+                        store.commit("setUser", data.content);
                     } else {
                         message.error(data.message);
                     }
