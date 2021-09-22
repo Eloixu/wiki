@@ -1,12 +1,23 @@
 <template>
     <a-layout-header class="header">
         <div class="logo" />
+        <a-popconfirm
+                title="确认退出登录?"
+                ok-text="是"
+                cancel-text="否"
+                @confirm="logout()"
+        >
+            <a class="login-menu" v-show="user.id">
+                <span>退出登录</span>
+            </a>
+        </a-popconfirm>
         <a class="login-menu" @click="showLoginModal" v-show="!user.id">
             <span>登录</span>
         </a>
         <a class="login-menu" v-show="user.id">
             <span>您好：{{user.name}}</span>
         </a>
+
         <a-menu
                 theme="dark"
                 mode="horizontal"
@@ -63,10 +74,10 @@
     export default defineComponent({
         name: 'the-header',
         setup () {
-            //登陆后保存
+            //登录后保存
             const user = computed(() => store.state.user);//computed会去监听store的变化
 
-            //用来登陆
+            //用来登录
             const loginUser = ref({
                 loginName: "test",
                 password: "test123"
@@ -79,7 +90,7 @@
 
             // 登录
             const login = () => {
-                console.log("开始登陆");
+                console.log("开始登录");
                 loginModalLoading.value = true;
                 loginUser.value.password = hexMd5(loginUser.value.password + KEY);
                 axios.post('/user/login', loginUser.value).then((response) => {
@@ -87,9 +98,24 @@
                     const data = response.data;
                     if (data.success) {
                         loginModalVisible.value = false;
-                        message.success("登陆成功！");
+                        message.success("登录成功！");
                         //调用在vuex里定义的setUser()来给全局变量user赋值
                         store.commit("setUser", data.content);
+                    } else {
+                        message.error(data.message);
+                    }
+                });
+            };
+
+            // 登出
+            const logout = () => {
+                console.log("开始登出");
+                axios.get('/user/logout/' + user.value.token).then((response) => {
+                    const data = response.data;
+                    if (data.success) {
+                        message.success("退出登录成功！");
+                        //调用在vuex里定义的setUser()来清空全局变量user的值
+                        store.commit("setUser", {});
                     } else {
                         message.error(data.message);
                     }
@@ -102,6 +128,7 @@
                 showLoginModal,
                 loginUser,
                 login,
+                logout,
                 user
             }
         }
@@ -112,5 +139,6 @@
     .login-menu {
         float: right;
         color: white;
+        padding-left: 10px;
     }
 </style>

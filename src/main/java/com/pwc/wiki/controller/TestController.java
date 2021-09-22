@@ -64,4 +64,11 @@ public class TestController {
         LOG.info("key: {}, value: {}", key, object);
         return object;
     }
+
+    @RequestMapping("/redis/delete/{key}")
+    public Object delete(@PathVariable Long key) {
+        Object object = redisTemplate.delete(key);
+        LOG.info("key: {}, value: {}", key, object);
+        return object;
+    }
 }
