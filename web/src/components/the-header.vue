@@ -27,13 +27,14 @@
             <a-menu-item key="/">
                 <router-link to="/">首页</router-link>
             </a-menu-item>
-            <a-menu-item key="/admin/user">
+            <!--用v-show="user.id"无法隐藏ant vue的<a-menu-item>组件-->
+            <a-menu-item key="/admin/user" :style="user.id? {} : {display:'none'}">
                 <router-link to="/admin/user">用户管理</router-link>
             </a-menu-item>
-            <a-menu-item key="/admin/ebook">
+            <a-menu-item key="/admin/ebook" :style="user.id? {} : {display:'none'}">
                 <router-link to="/admin/ebook">电子书管理</router-link>
             </a-menu-item>
-            <a-menu-item key="/admin/category">
+            <a-menu-item key="/admin/category" :style="user.id? {} : {display:'none'}">
                 <router-link to="/admin/category">分类管理</router-link>
             </a-menu-item>
             <a-menu-item key="/about">
