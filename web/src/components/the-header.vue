@@ -55,6 +55,7 @@
     import { defineComponent, ref } from 'vue';
     import axios from 'axios';
     import { message } from 'ant-design-vue';
+    import store from "@/store";
 
     declare let hexMd5: any;
     declare let KEY: any;
@@ -89,6 +90,8 @@
                         loginModalVisible.value = false;
                         message.success("登陆成功！");
                         user.value = data.content;
+                        //调用在vuex里定义的setUser()来给全局变量user赋值
+                        store.commit("setUser", user.value);
                     } else {
                         message.error(data.message);
                     }
