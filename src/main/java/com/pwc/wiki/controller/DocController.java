@@ -55,6 +55,14 @@ public class DocController {
         return resp;
     }
 
+    //点赞
+    @RequestMapping(value = "/vote/{id}", method = RequestMethod.GET)
+    public CommonResp vote(@PathVariable Long id){
+        CommonResp<String> resp = new CommonResp<>();
+        docService.vote(id);
+        return resp;
+    }
+
     @RequestMapping(value = "/delete/{idsStr}", method = RequestMethod.DELETE)
     public CommonResp delete(@PathVariable String idsStr){
         CommonResp resp = new CommonResp<>();

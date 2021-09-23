@@ -10,4 +10,6 @@ import java.util.List;
 public interface DocMapperCust {
     //@Param("id")里的id会和DocMapperCust.xml里的 #{id} 匹配
     public void increaseViewCount(@Param("id") Long id);
+
+    public void increaseVoteCount(@Param("id") Long id);
 }

@@ -84,6 +84,12 @@ public class DocService {
         return content==null? null:content.getContent();
     }
 
+    //点赞
+    public void vote(Long id){
+        //文档阅读数+1
+        docMapperCust.increaseVoteCount(id);
+    }
+
     //保存：修改+新增
     public void save(DocSaveReq req){
         //把docSaveReq里的id等（除content）复制到doc
