@@ -7,6 +7,7 @@ import com.pwc.wiki.domain.Doc;
 import com.pwc.wiki.domain.DocExample;
 import com.pwc.wiki.mapper.ContentMapper;
 import com.pwc.wiki.mapper.DocMapper;
+import com.pwc.wiki.mapper.DocMapperCust;
 import com.pwc.wiki.req.DocQueryReq;
 import com.pwc.wiki.req.DocSaveReq;
 import com.pwc.wiki.resp.DocQueryResp;
@@ -27,6 +28,9 @@ public class DocService {
 
     @Autowired
     private DocMapper docMapper;
+
+    @Autowired
+    private DocMapperCust docMapperCust;
 
     @Autowired
     private ContentMapper contentMapper;
@@ -75,6 +79,8 @@ public class DocService {
     //查找content
     public String getContent(Long id){
         Content content = contentMapper.selectByPrimaryKey(id);
+        //文档阅读数+1
+        docMapperCust.increaseViewCount(id);
         return content==null? null:content.getContent();
     }
 
@@ -86,6 +92,9 @@ public class DocService {
         Content content = CopyUtil.copy(req,Content.class);
         if(ObjectUtils.isEmpty(req.getId())){
             doc.setId(snowFlake.nextId());
+            //若ViewCount不设为0，则数据库中其值会为null，阅读过后自增功能将不起作用
+            doc.setViewCount(0);
+            doc.setVoteCount(0);
             docMapper.insert(doc);
             content.setId(doc.getId());
             contentMapper.insert(content);
