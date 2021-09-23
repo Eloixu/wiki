@@ -5,6 +5,8 @@ import com.github.pagehelper.PageInfo;
 import com.pwc.wiki.domain.Content;
 import com.pwc.wiki.domain.Doc;
 import com.pwc.wiki.domain.DocExample;
+import com.pwc.wiki.exception.BusinessException;
+import com.pwc.wiki.exception.BusinessExceptionCode;
 import com.pwc.wiki.mapper.ContentMapper;
 import com.pwc.wiki.mapper.DocMapper;
 import com.pwc.wiki.mapper.DocMapperCust;
@@ -13,6 +15,8 @@ import com.pwc.wiki.req.DocSaveReq;
 import com.pwc.wiki.resp.DocQueryResp;
 import com.pwc.wiki.resp.PageResp;
 import com.pwc.wiki.util.CopyUtil;
+import com.pwc.wiki.util.RedisUtil;
+import com.pwc.wiki.util.RequestContext;
 import com.pwc.wiki.util.SnowFlake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +41,9 @@ public class DocService {
 
     @Autowired
     private SnowFlake snowFlake;
+
+    @Autowired
+    public RedisUtil redisUtil;
 
     public List<DocQueryResp> all(Long ebookId) {
         DocExample docExample = new DocExample();
@@ -86,8 +93,15 @@ public class DocService {
 
     //点赞
     public void vote(Long id){
-        //文档阅读数+1
-        docMapperCust.increaseVoteCount(id);
+        String ip = RequestContext.getRemoteAddr();
+        // 远程IP+doc.id作为key，24小时内不能重复点赞
+        if(redisUtil.validateRepeat("DOC_VOTE_" + id + "_" + ip,3600*24)){
+            //文档阅读数+1
+            docMapperCust.increaseVoteCount(id);
+        }else{
+            throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
+        }
+
     }
 
     //保存：修改+新增
