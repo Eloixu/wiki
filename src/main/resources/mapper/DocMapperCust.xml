@@ -10,4 +10,10 @@
         UPDATE doc SET vote_count = vote_count + 1 WHERE id = #{id}
     </update>
 
+    <update id="updateEbookInfo">
+        UPDATE ebook a, (SELECT ebook_id,count(1) doc_count, sum(view_count) view_count_sum, sum(vote_count) vote_count_sum FROM doc GROUP BY ebook_id) b
+        SET a.doc_count = b.doc_count, a.view_count = b.view_count_sum, a.vote_count = b.vote_count_sum
+        WHERE a.id = b.ebook_id;
+    </update>
+
 </mapper>
