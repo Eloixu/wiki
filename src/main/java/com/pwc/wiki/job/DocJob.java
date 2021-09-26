@@ -1,8 +1,10 @@
 package com.pwc.wiki.job;
 
 import com.pwc.wiki.service.DocService;
+import com.pwc.wiki.util.SnowFlake;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -14,6 +16,9 @@ import java.util.Date;
 public class DocJob {
 
     private static final Logger LOG = LoggerFactory.getLogger(DocJob.class);
+
+    @Autowired
+    private SnowFlake snowFlake;
 
     @Autowired
     DocService docService;
@@ -34,6 +39,9 @@ public class DocJob {
      */
     @Scheduled(cron = "0/30 * * * * ?")
     public void cron(){
+        // 增加日志流水号
+        MDC.put("LOG_ID", String.valueOf(snowFlake.nextId()));
+
         LOG.info("更新电子书下的文档数据开始");
         long start = System.currentTimeMillis();
         docService.updateEbookInfo();
