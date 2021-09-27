@@ -21,6 +21,7 @@ import com.pwc.wiki.util.SnowFlake;
 import com.pwc.wiki.websocket.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -108,7 +109,8 @@ public class DocService {
         // 向所有连接的session推送消息
         Doc doc = docMapper.selectByPrimaryKey(id);
         //异步化的方法sendInfo()一定要放在另外一个类里
-        wsService.sendInfo("【" + doc.getName() + "】被点赞！");
+        //把当前线程的日志号传给异步线程，方便生产维护
+        wsService.sendInfo("【" + doc.getName() + "】被点赞！",MDC.get("LOG_ID"));
     }
 
     //保存：修改+新增
