@@ -6,11 +6,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @MapperScan("com.pwc.wiki.mapper")
 @EnableScheduling//SpringBoot定时任务的annotation
+@EnableAsync//SpringBoot异步化的annotation
 public class WikiApplication {
 
 	private static final Logger LOG = LoggerFactory.getLogger(WikiApplication.class);

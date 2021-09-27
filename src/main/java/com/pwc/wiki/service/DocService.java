@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-
 import java.util.List;
 
 @Service
@@ -47,7 +46,7 @@ public class DocService {
     public RedisUtil redisUtil;
 
     @Autowired
-    WebSocketServer webSocketServer;
+    public WsService wsService;
 
     public List<DocQueryResp> all(Long ebookId) {
         DocExample docExample = new DocExample();
@@ -108,7 +107,8 @@ public class DocService {
 
         // 向所有连接的session推送消息
         Doc doc = docMapper.selectByPrimaryKey(id);
-        webSocketServer.sendInfo("【" + doc.getName() + "】被点赞！");
+        //异步化的方法sendInfo()一定要放在另外一个类里
+        wsService.sendInfo("【" + doc.getName() + "】被点赞！");
     }
 
     //保存：修改+新增
