@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import java.util.List;
 
@@ -114,6 +115,8 @@ public class DocService {
     }
 
     //保存：修改+新增
+    //SpringBoot中事务的annotation因为这里会执行多个sql，加@Transactional注解的方法一定要在其它类中调用才会生效，若在自己类中调用就不会开启事务的功能。
+    @Transactional
     public void save(DocSaveReq req){
         //把docSaveReq里的id等（除content）复制到doc
         Doc doc = CopyUtil.copy(req,Doc.class);
