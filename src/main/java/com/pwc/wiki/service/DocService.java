@@ -18,6 +18,7 @@ import com.pwc.wiki.util.CopyUtil;
 import com.pwc.wiki.util.RedisUtil;
 import com.pwc.wiki.util.RequestContext;
 import com.pwc.wiki.util.SnowFlake;
+import com.pwc.wiki.websocket.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,9 @@ public class DocService {
 
     @Autowired
     public RedisUtil redisUtil;
+
+    @Autowired
+    WebSocketServer webSocketServer;
 
     public List<DocQueryResp> all(Long ebookId) {
         DocExample docExample = new DocExample();
@@ -102,6 +106,9 @@ public class DocService {
             throw new BusinessException(BusinessExceptionCode.VOTE_REPEAT);
         }
 
+        // 向所有连接的session推送消息
+        Doc doc = docMapper.selectByPrimaryKey(id);
+        webSocketServer.sendInfo("【" + doc.getName() + "】被点赞！");
     }
 
     //保存：修改+新增
